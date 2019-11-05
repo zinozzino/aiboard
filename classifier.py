@@ -48,10 +48,8 @@ class Tokenizer():
         with torch.no_grad():
             all_encoder_layer, pooled_output = self.kobert_model(input_tensor)
 
-        #print(pooled_output)
-        #print(all_encoder_layer[-1][0][0])
-        
-        return all_encoder_layer[-1][0][0].unsqueeze(0)
+        return pooled_output
+        #return all_encoder_layer[-1][0][0].unsqueeze(0)
         
 
 if __name__ == "__main__":
@@ -89,11 +87,19 @@ if __name__ == "__main__":
             optimizer.step()
 
         print("correct : {}/{}".format(cor, len(questions)))
-            
+    
+    model.eval()
     for q in questions:
         tokens = tokenizer.convert(q['question'])
         ans_pred = model(tokens)
         _, ans_ind = ans_pred.max(1)
-        print(q['answer_no'] - 1, ans_ind, q['answer_no'] - 1 == ans_ind)
+        if q['answer_no'] - 1 == ans_ind :
+            cor += 1
+
+    print("RESULT : correct : {}/{}".format(cor, len(questions)))
         
-    torch.save(model.state_dict(), model.pt)
+    torch.save({
+        'model_state_dict' : model.state_dict(),
+        'optimizer_state_dict' : optimizer.state_dict(),
+        'loss' : loss
+    }, "model.pt")
