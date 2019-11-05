@@ -1,12 +1,12 @@
 import pymysql
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_restful import Resource, Api
 
 
 class DBFuncs:
-    #def __init__(self): # db 연결 유지
+    # def __init__(self): # db 연결 유지
 
-    def get_sql(self, sql): #sql 실행 / 성공 시 딕셔너리 형태로 반환 실패 시 -1
+    def get_sql(self, sql):  # sql 실행 / 성공 시 딕셔너리 형태로 반환 실패 시 -1
         conn = None
         rs = -1
 
@@ -33,17 +33,17 @@ class DBFuncs:
 
         return res
 
-    def question_count(self): # 질문 갯수 반환
+    def question_count(self):  # 질문 갯수 반환
         res = self.get_sql('select COUNT(question) as count from q_list')
 
         return res
 
-    def answer_count(self):   # 답변 갯수 반환
+    def answer_count(self):  # 답변 갯수 반환
         res = self.get_sql('select COUNT(id) as count from a_list')
 
         return res
 
-    def get_answer(self, id):
+    def get_answer(self, id):  # 성공 시 답변 / 실패 시 -1
         conn = None
         rs = -1
 
@@ -68,7 +68,7 @@ class DBFuncs:
 
             return rs
 
-    def add_answer(self, a):   # 답변 등록 / 답변 id 반환 실패시 -1
+    def add_answer(self, a):  # 답변 등록 / 답변 id 반환 실패시 -1
         conn = None
         rs = -1
 
@@ -93,7 +93,7 @@ class DBFuncs:
 
             return rs
 
-    def add_question(self, q, a_no):    # 질문 등록 / 성공 시 1 실패 시 -1 반환
+    def add_question(self, q, a_no):  # 질문 등록 / 성공 시 1 실패 시 -1 반환
         conn = None
         rs = -1
 
@@ -133,7 +133,7 @@ class DBFuncs:
                 curs.execute(sql, q_id)
                 rs = curs.fetchall()
 
-                pt = rs[q_id-1]['l_pt']
+                pt = rs[q_id - 1]['l_pt']
 
                 if change == -1:
                     pt -= 1
@@ -160,11 +160,18 @@ class API:
         self.app = Flask(__name__)
         api = Api(self.app)
 
-        api.add_resource(RequestAnalysis, '/', '/RA')
+        api.add_resource(Plugin, '/')
+        api.add_resource(RequestAnalysis, '/plugin/RA')
+        api.add_resource(AddQnA, '/plugin/AQA')
 
     def run_app(self):
         self.app.run(debug=True)
         # debug never in production
+
+
+class Plugin(Resource):
+    def get(self):
+        return "Plugin For AI QnA Board"
 
 
 class RequestAnalysis(Resource):
@@ -172,23 +179,63 @@ class RequestAnalysis(Resource):
         self.db = DBFuncs();
 
     def get(self):
-        return "RequestAnalysis"
-
-    def post(self):
-
-
-        # a_id = self.db.add_answer(answer)
-        # res = self.db.add_question(question, a_id)
-
-        return 1
+        return "QnA API - Request Analysis"
 
     def put(self):
-        question = request.form['question']
-        result = 1
-        # 분석 기능
-        answer = self.db.get_answer(result)
-        # print(answer)
-        return {"answer": answer}
+        res = -1
+
+        try:
+            question = request.get_json().get('question')
+            # print(question)
+
+            analyzed = 1
+            # 분석 기능
+
+            if analyzed == 1:
+                answer = self.db.get_answer(analyzed)
+                # print(answer)
+                res = 1
+
+        except Exception as e:
+            print(e)
+
+        finally:
+            if res == 1:
+                return jsonify({"answer": answer})
+            else:
+                return jsonify({"answer": res})
+
+
+class AddQnA(Resource):
+    def __init__(self):
+        self.db = DBFuncs();
+
+    def get(self):
+        return "QnA API - Add QnA"
+
+    def post(self):
+        res = -1
+
+        try:
+            question = request.get_json().get('question')
+            answer = request.get_json().get('answer')
+
+            # print(question)
+            # print(answer)
+
+            a_id = self.db.add_answer(answer)
+
+            if a_id != -1:
+                res = self.db.add_question(question, a_id)
+
+                if res != -1:
+                    res = 1
+
+        except Exception as e:
+            print(e)
+
+        finally:
+            return jsonify({"result": res})
 
 
 if __name__ == "__main__":
@@ -219,7 +266,7 @@ if __name__ == "__main__":
         if row != -1:
             for i in row:
                 print(i['l_pt'])
-                
+
     res = qna_db.get_answer(2)
     print(res)
 '''
