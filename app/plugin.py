@@ -183,20 +183,23 @@ class RequestAnalysis(Resource):
 
     def put(self):
         res = -1
+        analyzed = -1
 
         try:
             question = request.get_json().get('question')
             # print(question)
 
-            analyzed = 1
-            # 분석 기능
+            if question is not None:
+                analyzed = 1
+                # 자연어 처리 함수 여기에
 
-            if analyzed == 1:
+            if analyzed != -1:
                 answer = self.db.get_answer(analyzed)
                 # print(answer)
                 res = 1
 
         except Exception as e:
+            print("Error in RA")
             print(e)
 
         finally:
@@ -215,15 +218,14 @@ class AddQnA(Resource):
 
     def post(self):
         res = -1
+        a_id = -1
 
         try:
             question = request.get_json().get('question')
             answer = request.get_json().get('answer')
 
-            # print(question)
-            # print(answer)
-
-            a_id = self.db.add_answer(answer)
+            if answer is not None:
+                a_id = self.db.add_answer(answer)
 
             if a_id != -1:
                 res = self.db.add_question(question, a_id)
@@ -232,6 +234,7 @@ class AddQnA(Resource):
                     res = 1
 
         except Exception as e:
+            print("Error in AQA")
             print(e)
 
         finally:
@@ -242,9 +245,9 @@ if __name__ == "__main__":
     CA = API()
     CA.run_app()
 
+# 예제 나중에 지우기
 '''
     qna_db = DBFuncs()
-    #예제
     row = qna_db.get_question_list()
     if row != -1:
         for i in row:
@@ -269,4 +272,6 @@ if __name__ == "__main__":
 
     res = qna_db.get_answer(2)
     print(res)
+    
+    # curl -i -H "Content-Type: application/json" -X POST -d "{\"question\":\"Rest API \uD14C\uC2A4\uD2B8\",\"answer\":\"REST API \uD14C\uC2A4\uD2B8\"}" http://localhost:5000/plugin/AQA
 '''
