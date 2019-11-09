@@ -6,6 +6,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc -p .",
+    "clean": "rimraf dist",
     "dev": "nodemon --watch \"src/**/*.ts\" --exec \"ts-node src/index.ts\"",
     "makemigrations": "yarn run typeorm migration:generate -d \"src/migrations\" -n",
     "migrate": "yarn run typeorm migration:run",
@@ -46,6 +47,7 @@
     "eslint-plugin-import": "^2.18.2",
     "nodemon": "^1.19.4",
     "prettier": "^1.19.0",
+    "rimraf": "^3.0.0",
     "ts-node": "^8.4.1",
     "typescript": "^3.7.2"
   }
