@@ -14,6 +14,7 @@ createConnection({
   username: config.database.username,
   password: config.database.password,
   database: config.database.name,
+  logging: true,
   entities: [`${__dirname}/models/**/*`],
   migrations: [`${__dirname}/migrations/**/*`],
 })

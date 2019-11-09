@@ -6,13 +6,15 @@ const {
   PGDATABASE = 'aiboard',
   PGUSER = 'postgres',
   PGPASSWORD = '',
-  SECRET_KEY = '',
+  SECRET_KEY = 'i+AD5mOyZLIxUGX5RhRSKgZHWtg=',
 } = process.env;
 
 const config = {
   host: HOST,
   port: parseInt(PORT, 10),
   secretKey: SECRET_KEY,
+  accessTimeout: '5m',
+  refreshTimeout: '1d',
   database: {
     host: PGHOST,
     port: parseInt(PGPORT, 10),
