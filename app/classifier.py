@@ -76,6 +76,7 @@ class Classifier():
             self.loss = data['loss']
 
             self.epoch = data['epoch']
+            print("{} epoch model loaded".format(self.epoch))
         
         self.tokenizer = Tokenizer()
         
@@ -136,4 +137,4 @@ class Classifier():
         print(ans_pred)
         print(ans_value, ans_ind)
 
-        return ans_ind
+        return ans_ind.item()

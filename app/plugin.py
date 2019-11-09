@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_restful import Resource, Api
 
 from database import Database
+from classifier import Classifier
 
 class API:
     def __init__(self):
@@ -26,6 +27,7 @@ class Plugin(Resource):
 class Classify(Resource):
     def __init__(self):
         self.db = Database()
+        self.classifier = Classifier("model.pt")
 
     def get(self):
         res = -1
@@ -38,8 +40,7 @@ class Classify(Resource):
                 question = data.get('question')
 
             if question is not None:
-                analyzed = 1
-            # 자연어 처리 함수 여기에
+                analyzed = self.classifier.classify(question) 
 
             if analyzed != -1:
                 answer = self.db.get_answer(analyzed)
@@ -54,7 +55,7 @@ class Classify(Resource):
                 return "QnA API - Classify"
             else:
                 if res == 1:
-                    return jsonify({"answer": answer})
+                    return jsonify({"answer" : f"{analyzed}"})
                 else:
                     return jsonify({"answer": res})
 
