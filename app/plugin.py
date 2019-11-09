@@ -1,159 +1,7 @@
-import pymysql
 from flask import Flask, request, jsonify
 from flask_restful import Resource, Api
 
-
-class DBFuncs:
-    # def __init__(self): # db 연결 유지
-
-    def get_sql(self, sql):  # sql 실행 / 성공 시 딕셔너리 형태로 반환 실패 시 -1
-        conn = None
-        rs = -1
-
-        try:
-            conn = pymysql.connect(
-                host='localhost', port=3306, user='NLP', password='haltheta', charset='utf8', db='qna_list'
-            )
-
-            with conn.cursor(pymysql.cursors.DictCursor) as curs:
-                curs.execute(sql)
-                rs = curs.fetchall()
-
-        except pymysql.err.Error as e:
-            print(e)
-
-        finally:
-            if conn != None:
-                conn.close()
-
-            return rs
-
-    def get_question_list(self):  # 질문 리스트 가져오기 딕셔너리 형태
-        res = self.get_sql('select * from q_list')
-
-        return res
-
-    def question_count(self):  # 질문 갯수 반환
-        res = self.get_sql('select COUNT(question) as count from q_list')
-
-        return res
-
-    def answer_count(self):  # 답변 갯수 반환
-        res = self.get_sql('select COUNT(id) as count from a_list')
-
-        return res
-
-    def get_answer(self, id):  # 성공 시 답변 / 실패 시 -1
-        conn = None
-        rs = -1
-
-        try:
-            conn = pymysql.connect(
-                host='localhost', port=3306, user='NLP', password='haltheta', charset='utf8', db='qna_list'
-            )
-
-            with conn.cursor(pymysql.cursors.DictCursor) as curs:
-                sql = 'select answer from a_list where id = %s'
-                curs.execute(sql, id)
-                ans = curs.fetchall()
-
-                rs = ans[0]['answer']
-
-        except pymysql.err.Error as e:
-            print(e)
-
-        finally:
-            if conn != None:
-                conn.close()
-
-            return rs
-
-    def add_answer(self, a):  # 답변 등록 / 답변 id 반환 실패시 -1
-        conn = None
-        rs = -1
-
-        try:
-            conn = pymysql.connect(
-                host='localhost', port=3306, user='NLP', password='haltheta', charset='utf8', db='qna_list'
-            )
-
-            with conn.cursor(pymysql.cursors.DictCursor) as curs:
-                sql = 'insert into a_list (answer) values (%s)'
-                curs.execute(sql, (a))
-                conn.commit()
-
-                rs = curs.lastrowid
-
-        except pymysql.err.Error as e:
-            print(e)
-
-        finally:
-            if conn != None:
-                conn.close()
-
-            return rs
-
-    def add_question(self, q, a_no):  # 질문 등록 / 성공 시 1 실패 시 -1 반환
-        conn = None
-        rs = -1
-
-        try:
-            conn = pymysql.connect(
-                host='localhost', port=3306, user='NLP', password='haltheta', charset='utf8', db='qna_list'
-            )
-
-            with conn.cursor(pymysql.cursors.DictCursor) as curs:
-                sql = 'insert into q_list (question, answer_no, l_pt) values (%s, %s, 0)'
-                curs.execute(sql, (q, a_no))
-                conn.commit()
-
-                rs = 1
-
-        except pymysql.err.Error as e:
-            print(e)
-
-        finally:
-            if conn != None:
-                conn.close()
-
-            return rs
-
-    def modify_pt(self, q_id, change):
-        conn = None
-        rs = -1
-        pt = 0
-
-        try:
-            conn = pymysql.connect(
-                host='localhost', port=3306, user='NLP', password='haltheta', charset='utf8', db='qna_list'
-            )
-
-            with conn.cursor(pymysql.cursors.DictCursor) as curs:
-                sql = 'select l_pt from q_list where id = %s'
-                curs.execute(sql, q_id)
-                rs = curs.fetchall()
-
-                pt = rs[q_id - 1]['l_pt']
-
-                if change == -1:
-                    pt -= 1
-                else:
-                    pt += 1
-
-                sql = 'update q_list set l_pt = %s where id = %s'
-                curs.execute(sql, (pt, q_id))
-                conn.commit()
-                rs = 1
-
-        except pymysql.err.Error as e:
-            print(e)
-
-        finally:
-            if conn != None:
-                conn.close()
-
-            return rs
-
+from database import Database
 
 class API:
     def __init__(self):
@@ -176,7 +24,7 @@ class Plugin(Resource):
 
 class RequestAnalysis(Resource):
     def __init__(self):
-        self.db = DBFuncs();
+        self.db = Database();
 
     def get(self):
         return "QnA API - Request Analysis"
@@ -211,7 +59,7 @@ class RequestAnalysis(Resource):
 
 class AddQnA(Resource):
     def __init__(self):
-        self.db = DBFuncs();
+        self.db = Database()
 
     def get(self):
         return "QnA API - Add QnA"
