@@ -79,7 +79,6 @@ class Classifier():
         
         self.tokenizer = Tokenizer()
         
-
     def save(self, path):
             torch.save({
                 'answer_max' : self.answer_max,
@@ -90,6 +89,8 @@ class Classifier():
             }, path)
 
     def train(self, epoch, data):
+        cor_num = []
+
         for e in range(self.epoch, self.epoch + epoch):
             #shuffle list
             random.shuffle(data)
@@ -120,6 +121,9 @@ class Classifier():
 
             print("RESULT : correct : {}/{}".format(cor, len(questions)))
             cor_num.append(cor)
+        
+        self.epoch += epoch
+        print(cor_num)
 
     def classify(self, question):
         tokens = self.tokenizer.convert(question)
