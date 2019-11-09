@@ -1,0 +1,45 @@
+{
+  "name": "wordpress",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Jinho Jeong",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc -p .",
+    "dev": "nodemon --watch \"src/**/*.ts\" --exec \"ts-node src/index.ts\"",
+    "makemigrations": "yarn run typeorm migration:generate -d \"src/migrations\" -n",
+    "start": "node dist/index.js",
+    "typeorm": "ts-node ./node_modules/typeorm/cli.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "glob": "^7.1.6",
+    "lodash": "^4.17.15",
+    "morgan": "^1.9.1",
+    "nanoid": "^2.1.6",
+    "pg": "^7.12.1",
+    "pg-hstore": "^2.3.3",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.2.20"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.6",
+    "@types/express": "^4.17.2",
+    "@types/glob": "^7.1.1",
+    "@types/lodash": "^4.14.146",
+    "@types/morgan": "^1.7.37",
+    "@types/nanoid": "^2.1.0",
+    "@types/node": "^12.12.7",
+    "@typescript-eslint/eslint-plugin": "^2.6.1",
+    "@typescript-eslint/parser": "^2.6.1",
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-import-resolver-node": "^0.3.2",
+    "eslint-plugin-import": "^2.18.2",
+    "nodemon": "^1.19.4",
+    "prettier": "^1.19.0",
+    "ts-node": "^8.4.1",
+    "typescript": "^3.7.2"
+  }
+}
