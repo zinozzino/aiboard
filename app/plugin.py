@@ -111,5 +111,6 @@ if __name__ == "__main__":
     CA = API()
     CA.run_app()
 
+
 # 예제 나중에 지우기
 # curl -i -H "Content-Type: application/json" -X POST -d "{\"question\":\"Rest API \uD14C\uC2A4\uD2B8\",\"answer\":\"REST API \uD14C\uC2A4\uD2B8\"}" http://localhost:5000/plugin/qna
