@@ -4,6 +4,7 @@ from flask_restful import Resource, Api
 from database import Database
 from classifier import Classifier
 
+
 class API:
     def __init__(self):
         self.app = Flask(__name__)
