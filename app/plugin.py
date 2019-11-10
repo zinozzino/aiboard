@@ -93,12 +93,19 @@ class QnA(Resource):
 
 
 class Relearn(Resource):
+    def __init__(self):
+        self.db = Database()
+
     def get(self):
         return "QnA API - Relearn"
 
     def post(self):
         try:
-            return 1
+            ans_max = self.db.answer_max()
+            data = self.db.get_question_list()
+            new_classifier = Classifier(ans_max=ans_max)
+            new_classifier.train(1, data)
+            new_classifier.save("model.pt")
 
         except Exception as e:
             print("Error in Relearn")

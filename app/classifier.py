@@ -7,6 +7,8 @@ from kobert.pytorch_kobert import get_pytorch_kobert_model
 from kobert.utils import get_tokenizer
 from gluonnlp.data import BERTSPTokenizer, BERTSentenceTransform
 
+import random
+
 from database import Database
 
 learning_rate = 1e-4
@@ -52,10 +54,10 @@ class Tokenizer():
 
 class Classifier():
     
-    def __init__(self, path=None):
+    def __init__(self, ans_max=0, path=None):
         if path is None :
             #create new Model
-            self.answer_max = 0 #get from databse.
+            self.answer_max = ans_max #get from databse.
             self.model = ClassifierModel(self.answer_max)
             self.optimizer = optim.Adam(self.model.parameters(), learning_rate)
             self.loss_fn = nn.CrossEntropyLoss()
@@ -97,30 +99,30 @@ class Classifier():
             random.shuffle(data)
             cor = 0
             running_loss = 0
-            model.train()
-            for q in questions:
-                tokens = tokenizer.convert(q['question'])
+            self.model.train()
+            for q in data:
+                tokens = self.tokenizer.convert(q['question'])
                 ans = torch.LongTensor([q['answer_no']])
-                ans_pred = model(tokens)
+                ans_pred = self.model(tokens)
             
-                loss = loss_fn(ans_pred, ans)
-                running_loss += loss.item()
+                self.loss = self.loss_fn(ans_pred, ans)
+                running_loss += self.loss.item()
 
-                optimizer.zero_grad()
-                loss.backward()
-                optimizer.step()
+                self.optimizer.zero_grad()
+                self.loss.backward()
+                self.optimizer.step()
             
-            print("LOSS : {}".format(running_loss/len(questions)))
+            print("LOSS : {}".format(running_loss/len(data)))
         
-            model.eval()
-            for q in questions:
-                tokens = tokenizer.convert(q['question'])
-                ans_pred = model(tokens)
+            self.model.eval()
+            for q in data:
+                tokens = self.tokenizer.convert(q['question'])
+                ans_pred = self.model(tokens)
                 _, ans_ind = ans_pred.max(1)
                 if q['answer_no'] == ans_ind :
                     cor += 1
 
-            print("RESULT : correct : {}/{}".format(cor, len(questions)))
+            print("RESULT : correct : {}/{}".format(cor, len(data)))
             cor_num.append(cor)
         
         self.epoch += epoch
