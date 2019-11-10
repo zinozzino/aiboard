@@ -34,7 +34,7 @@ class ClassifierModel(nn.Module):
         return x
 
 
-class Tokenizer():
+class Tokenizer:
 
     def __init__(self):
         self.token_max_len = 100
@@ -53,18 +53,19 @@ class Tokenizer():
         # return pooled_output
         return all_encoder_layer[-1][0][0].unsqueeze(0)
 
-class Classifier():
+
+class Classifier:
     
     def __init__(self, ans_max=0, path=None):
-        if path is None :
+        if path is None:
             # create new Model
-            self.answer_max = ans_max # get from database.
+            self.answer_max = ans_max   # get from database.
             self.model = ClassifierModel(self.answer_max)
             self.optimizer = optim.Adam(self.model.parameters(), learning_rate)
             self.loss_fn = nn.CrossEntropyLoss()
             self.epoch = 0
 
-        else : 
+        else:
             # load models from data
             data = torch.load(path)
             self.answer_max = data['answer_max']
@@ -84,13 +85,13 @@ class Classifier():
         self.tokenizer = Tokenizer()
         
     def save(self, path):
-            torch.save({
-                'answer_max' : self.answer_max,
-                'model_state_dict' : self.model.state_dict(),
-                'optimizer_state_dict' : self.optimizer.state_dict(),
-                'loss' : self.loss,
-                'epoch' : self.epoch
-            }, path)
+        torch.save({
+            'answer_max': self.answer_max,
+            'model_state_dict': self.model.state_dict(),
+            'optimizer_state_dict': self.optimizer.state_dict(),
+            'loss': self.loss,
+            'epoch': self.epoch
+        }, path)
 
     def train(self, epoch, data):
         cor_num = []
