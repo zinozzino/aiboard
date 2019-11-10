@@ -43,7 +43,7 @@ class Database:
     def answer_max(self):  # 답변 최대값 반환
         return self.get_sql('select MAX(id) as max from a_list')[0]['max']
 
-    def get_answer(self, id):  # 성공 시 답변 / 실패 시 -1
+    def get_answer(self, a_id):  # 성공 시 답변 / 실패 시 -1
         conn = None
         rs = -1
 
@@ -54,7 +54,7 @@ class Database:
 
             with conn.cursor(pymysql.cursors.DictCursor) as curs:
                 sql = 'select answer from a_list where id = %s'
-                curs.execute(sql, id)
+                curs.execute(sql, a_id)
                 ans = curs.fetchall()
 
                 rs = ans[0]['answer']
@@ -165,6 +165,4 @@ if __name__ == "__main__":
         for i in row:
             print(i['question'])
     print(row[0])
-
-    # curl -i -H "Content-Type: application/json" -X POST -d "{\"question\":\"Rest API \uD14C\uC2A4\uD2B8\",\"answer\":\"REST API \uD14C\uC2A4\uD2B8\"}" http://localhost:5000/plugin/AQA
 '''

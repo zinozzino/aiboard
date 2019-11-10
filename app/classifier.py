@@ -15,6 +15,7 @@ learning_rate = 1e-4
 bert_len = 768
 hidden = 7680
 
+
 class ClassifierModel(nn.Module):
 
     def __init__(self, ans_len):
@@ -49,22 +50,22 @@ class Tokenizer():
         with torch.no_grad():
             all_encoder_layer, pooled_output = self.kobert_model(input_tensor)
 
-        #return pooled_output
+        # return pooled_output
         return all_encoder_layer[-1][0][0].unsqueeze(0)
 
 class Classifier():
     
     def __init__(self, ans_max=0, path=None):
         if path is None :
-            #create new Model
-            self.answer_max = ans_max #get from databse.
+            # create new Model
+            self.answer_max = ans_max # get from database.
             self.model = ClassifierModel(self.answer_max)
             self.optimizer = optim.Adam(self.model.parameters(), learning_rate)
             self.loss_fn = nn.CrossEntropyLoss()
             self.epoch = 0
 
         else : 
-            #load models from data
+            # load models from data
             data = torch.load(path)
             self.answer_max = data['answer_max']
             
@@ -95,7 +96,7 @@ class Classifier():
         cor_num = []
 
         for e in range(self.epoch, self.epoch + epoch):
-            #shuffle list
+            # shuffle list
             random.shuffle(data)
             cor = 0
             running_loss = 0
@@ -119,7 +120,7 @@ class Classifier():
                 tokens = self.tokenizer.convert(q['question'])
                 ans_pred = self.model(tokens)
                 _, ans_ind = ans_pred.max(1)
-                if q['answer_no'] == ans_ind :
+                if q['answer_no'] == ans_ind:
                     cor += 1
 
             print("RESULT : correct : {}/{}".format(cor, len(data)))
@@ -131,7 +132,7 @@ class Classifier():
     def classify(self, question):
         tokens = self.tokenizer.convert(question)
         
-        #change to eval mode.
+        # change to eval mode.
         self.model.eval()
         ans_pred = self.model(tokens)
         ans_value, ans_ind = ans_pred.max(1)
