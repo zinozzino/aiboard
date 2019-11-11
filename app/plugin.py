@@ -4,6 +4,7 @@ from flask_restful import Resource, Api
 from database import Database
 from classifier import Classifier
 
+from threading import Thread
 
 class API:
     def __init__(self):
@@ -100,13 +101,18 @@ class Relearn(Resource):
     def get(self):
         return "QnA API - Relearn"
 
+    def thread_task(self):
+        ans_max = self.db.answer_max()
+        data = self.db.get_question_list()
+        new_classifier = Classifier(ans_max=ans_max)
+        new_classifier.train(1, data)
+        new_classifier.save("model.pt")
+
     def post(self):
         try:
-            ans_max = self.db.answer_max()
-            data = self.db.get_question_list()
-            new_classifier = Classifier(ans_max=ans_max)
-            new_classifier.train(1, data)
-            new_classifier.save("model.pt")
+            thread = Thread(target=self.thread_task)
+            thread.daemon = True
+            thread.start()
 
         except Exception as e:
             print("Error in Relearn")
