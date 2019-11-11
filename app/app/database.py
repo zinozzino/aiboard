@@ -1,14 +1,14 @@
+import os
 import pymysql
-
 
 class Database:
     def __init__(self):  # db 설정
-        self.host = 'localhost'
-        self.port = 3306
-        self.user = 'NLP'
-        self.pw = 'haltheta'
+        self.host = os.getenv('MYSQL_HOST', 'localhost')
+        self.port = int(os.getenv('MYSQL_PORT', '3306'))
+        self.user = os.getenv('MYSQL_USER', 'NLP')
+        self.pw = os.getenv('MYSQL_PASSWORD', 'haltheta')
         self.charset = 'utf8'
-        self.db = 'qna_list'
+        self.db = os.getenv('MYSQL_DATABASE', 'qna_list')
 
     def get_sql(self, sql):  # sql 실행 / 성공 시 딕셔너리 형태로 반환 실패 시 -1
         conn = None

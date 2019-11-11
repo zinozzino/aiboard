@@ -11,4 +11,5 @@ RUN set -ex && pip install --no-cache-dir -r requirements.txt
 COPY . ./
 
 EXPOSE 5000
+ENTRYPOINT [ "/app/entrypoint.sh" ]
 CMD ["gunicorn", "--bind", ":5000", "app.plugin:app"]
