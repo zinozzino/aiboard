@@ -1,25 +1,13 @@
 from flask import Flask, request, jsonify
 from flask_restful import Resource, Api
 
-from database import Database
-from classifier import Classifier
+from .database import Database
+from .classifier import Classifier
 
 from threading import Thread
 
-class API:
-    def __init__(self):
-        self.app = Flask(__name__)
-        api = Api(self.app)
-
-        api.add_resource(Plugin, '/')
-        api.add_resource(Classify, '/plugin/classify')
-        api.add_resource(QnA, '/plugin/qna')
-        api.add_resource(Relearn, '/plugin/relearn')
-
-    def run_app(self):
-        self.app.run(debug=True)
-        # debug never in production
-
+app = Flask(__name__)
+api = Api(app)
 
 class Plugin(Resource):
     def get(self):
@@ -42,7 +30,7 @@ class Classify(Resource):
                 question = data.get('question')
 
             if question is not None:
-                analyzed = self.classifier.classify(question) 
+                analyzed = self.classifier.classify(question)
 
             if analyzed != -1:
                 answer = self.db.get_answer(analyzed)
@@ -122,9 +110,10 @@ class Relearn(Resource):
             return 1
 
 
-if __name__ == "__main__":
-    CA = API()
-    CA.run_app()
+api.add_resource(Plugin, '/')
+api.add_resource(Classify, '/plugin/classify')
+api.add_resource(QnA, '/plugin/qna')
+api.add_resource(Relearn, '/plugin/relearn')
 
 
 # 예제 나중에 지우기
