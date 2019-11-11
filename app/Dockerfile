@@ -3,6 +3,12 @@ FROM pytorch/pytorch:latest
 
 WORKDIR /app
 
+RUN set -ex && \
+    sed -i s/archive\.ubuntu\.com/mirror.kakao.com/g /etc/apt/sources.list && \
+    sed -i s/security\.ubuntu\.com/mirror.kakao.com/g /etc/apt/sources.list && \
+    apt-get update -y && \
+    apt-get install -y --no-install-recommends netcat-openbsd
+
 RUN set -ex && pip install gunicorn
 
 COPY requirements.txt ./
