@@ -1,47 +1,30 @@
-version: '3.3'
-
+version: '2'
 services:
-  db:
-    image: mysql:5.7
-    environment:
-      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_password
-      MYSQL_DATABASE: wordpress
-      MYSQL_USER: wordpress
-      MYSQL_PASSWORD_FILE: /run/secrets/db_password
-    command: '--default-authentication-plugin=mysql_native_password'
+  mariadb:
+    image: 'bitnami/mariadb:10.3'
     volumes:
-      - db_data:/var/lib/mysql
-    secrets:
-      - db_password
-
+      - 'mariadb_data:/bitnami'
+    environment:
+      - MARIADB_USER=bn_wordpress
+      - MARIADB_DATABASE=bitnami_wordpress
+      - ALLOW_EMPTY_PASSWORD=yes
   wordpress:
-    depends_on:
-      - db
-    image: wordpress:5.2.4-php7.2-fpm-alpine
-    environment:
-      WORDPRESS_DB_HOST: db:3306
-      WORDPRESS_DB_USER: wordpress
-      WORDPRESS_DB_PASSWORD_FILE: /run/secrets/db_password
-      WORDPRESS_DB_NAME: wordpress
-    volumes:
-      - wordpress:/var/www/html
-    secrets:
-      - db_password
-
-  nginx:
-    depends_on:
-      - wordpress
-    image: nginx:1.17.5-alpine
+    image: 'bitnami/wordpress:5'
     ports:
-      - "80:80"
+      - '80:80'
+      - '443:443'
     volumes:
-      - wordpress:/var/www/html
-      - ./nginx/:/etc/nginx/conf.d/
-    
+      - 'wordpress_data:/bitnami'
+    depends_on:
+      - mariadb
+    environment:
+      - MARIADB_HOST=mariadb
+      - MARIADB_PORT_NUMBER=3306
+      - WORDPRESS_DATABASE_USER=bn_wordpress
+      - WORDPRESS_DATABASE_NAME=bitnami_wordpress
+      - ALLOW_EMPTY_PASSWORD=yes
 volumes:
-  db_data: {}
-  wordpress: {}
-
-secrets:
-  db_password:
-    external: true
+  mariadb_data:
+    driver: local
+  wordpress_data:
+    driver: local
