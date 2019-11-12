@@ -17,7 +17,7 @@ class Plugin(Resource):
 class Classify(Resource):
     def __init__(self):
         self.db = Database()
-        self.classifier = Classifier("model.pt")
+        self.classifier = Classifier(path='model.pt')
 
     def get(self):
         res = -1
