@@ -45,7 +45,7 @@ class Classify(Resource):
                 return "QnA API - Classify"
             else:
                 if res == 1:
-                    return jsonify({"answer" : f"{analyzed}"})
+                    return jsonify({"answer" : f"{answer}"})
                 else:
                     return jsonify({"answer": res})
 
