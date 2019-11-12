@@ -1,6 +1,8 @@
 # FROM mxnet/python:nightly_cpu_py3
 FROM pytorch/pytorch:latest
 
+ENV LANG C.UTF-8
+
 WORKDIR /app
 
 RUN set -ex && \
@@ -15,6 +17,7 @@ COPY requirements.txt ./
 RUN set -ex && pip install --no-cache-dir -r requirements.txt
 
 COPY . ./
+RUN python cache.py
 
 EXPOSE 5000
 ENTRYPOINT [ "/app/entrypoint.sh" ]
