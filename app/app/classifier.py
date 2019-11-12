@@ -80,7 +80,7 @@ class Classifier:
             self.loss = data['loss']
 
             self.epoch = data['epoch']
-            print("{} epoch model loaded".format(self.epoch))
+            print(f"{self.epoch} epoch model loaded")
 
         self.tokenizer = Tokenizer()
 
@@ -114,7 +114,7 @@ class Classifier:
                 self.loss.backward()
                 self.optimizer.step()
 
-            print("LOSS : {}".format(running_loss/len(data)))
+            print(f"LOSS : {running_loss/len(data)}")
 
             self.model.eval()
             for q in data:
@@ -124,7 +124,7 @@ class Classifier:
                 if q['answer_no'] == ans_ind:
                     cor += 1
 
-            print("RESULT : correct : {}/{}".format(cor, len(data)))
+            print(f"RESULT : correct : {cor}/{len(data)}")
             cor_num.append(cor)
 
         self.epoch += epoch
