@@ -148,7 +148,7 @@ class Database:
             return rs
 
 
-# 예제 나중에 지우기
+# 예제
 '''
 if __name__ == "__main__":
     db = Database()

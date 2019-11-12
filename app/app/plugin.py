@@ -45,7 +45,7 @@ class Classify(Resource):
                 return "QnA API - Classify"
             else:
                 if res == 1:
-                    return jsonify({"answer" : f"{answer}"})
+                    return jsonify({"answer": f"{answer}"})
                 else:
                     return jsonify({"answer": res})
 
@@ -116,5 +116,5 @@ api.add_resource(QnA, '/plugin/qna')
 api.add_resource(Relearn, '/plugin/relearn')
 
 
-# 예제 나중에 지우기
+# 예제
 # curl -i -H "Content-Type: application/json" -X POST -d "{\"question\":\"Rest API \uD14C\uC2A4\uD2B8\",\"answer\":\"REST API \uD14C\uC2A4\uD2B8\"}" http://localhost:5000/plugin/qna
