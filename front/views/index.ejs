@@ -1,32 +1,77 @@
 <!doctype html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>게시판</title>
-  </head>
-  <body>
 
-      <textarea id="question" rows="10"></textarea>
-      <button type="button" id="submit">제출</button>
+<head>
+  <meta charset="UTF-8">
 
-    <p id="answer"></p>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script>
-      document.getElementById('submit').addEventListener('click', (ev) => {
-          ev.preventDefault();
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-          const question = document.getElementById('question').value;
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
-          axios.post('/', { question }).then(resp => {
-            const { answer } = resp.data;
+  <title>AI 기반 Q&A 게시판</title>
+</head>
 
-            document.getElementById('answer').style.color = 'initial';
-            document.getElementById('answer').innerHTML = `${answer}`;
-          }).catch(() => {
-            document.getElementById('answer').innerHTML = '실패하였습니다.';
-            document.getElementById('answer').style.color = 'red';
-          })
-      });
-    </script>
-  </body>
+<body>
+
+  <div class="container">
+    <nav class="navbar navbar-light bg-light">
+      <span class="navbar-brand mb-0 h1">질답게시판</span>
+    </nav>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="form-group">
+          <label for="exampleFormControlTextarea1">아무 질문이나 입력해보세요!</label>
+          <textarea class="form-control" id="question" rows="10"></textarea>
+        </div>
+        <button class="btn btn-block btn-primary" id="submit">제출</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">답변</h5>
+        <p class="card-text" id="answer">이 곳에 답변이 표시됩니다..</p>
+      </div>
+    </div>
+
+  </div>
+
+  <p id="answer"></p>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script>
+    const initialText = '이 곳에 답변이 표시됩니다..';
+
+    const loadingText = '로딩중...';
+
+    document.getElementById('submit').addEventListener('click', (ev) => {
+      ev.preventDefault();
+
+      const question = document.getElementById('question').value;
+
+      document.getElementById('answer').innerHTML = loadingText;
+
+      axios.post('/', { question }).then(resp => {
+        const { answer } = resp.data;
+
+        document.getElementById('answer').style.color = 'initial';
+        document.getElementById('answer').innerHTML = `${answer}`;
+      }).catch(() => {
+        document.getElementById('answer').innerHTML = '실패하였습니다.';
+        document.getElementById('answer').style.color = 'red';
+      })
+    });
+  </script>
+</body>
+
 </html>
