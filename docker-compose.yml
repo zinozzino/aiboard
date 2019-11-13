@@ -1,26 +1,7 @@
-version: '3.4'
+version: '3'
 
 services:
-  answerdb:
-    image: mariadb:10.4.10-bionic
-    volumes:
-      - 'answerdb_data:/var/lib/mysql'
-    hostname: answerdb
-    environment:
-      - MYSQL_DATABASE=answer
-      - MYSQL_USER=answer
-      - MYSQL_PASSWORD=4342b05a072f3d9c7c19f3e412326c8e
-      - MYSQL_RANDOM_ROOT_PASSWORD=yes
-  app:
-    build: './app'
-    depends_on:
-      - answerdb
-    environment:
-      - MYSQL_HOST=answerdb
-      - MYSQL_DATABASE=answer
-      - MYSQL_USER=answer
-      - MYSQL_PASSWORD=4342b05a072f3d9c7c19f3e412326c8e
-  wordpressdb:
+  db:
     image: mariadb:10.4.10-bionic
     volumes:
       - 'wordpressdb_data:/var/lib/mysql'
@@ -28,22 +9,46 @@ services:
       - MYSQL_DATABASE=wordpress
       - MYSQL_USER=wordpress
       - MYSQL_PASSWORD=01d68185e332b1a6d61464991cf0d3c4
-      - MYSQL_RANDOM_ROOT_PASSWORD=yes
+      - MYSQL_ROOT_PASSWORD=01d68185e332b1a6d61464991cf0d3c4
+    networks:
+      - default
   wordpress:
-    image: 'bitnami/wordpress:5'
+    build: './wordpress'
     ports:
       - '80:80'
       - '443:443'
     volumes:
-      - 'wordpress_data:/bitnami'
+      - wordpress_data:/bitnami
     depends_on:
-      - wordpressdb
+      - db
     environment:
-      - MARIADB_HOST=wordpressdb
+      - MARIADB_HOST=db
       - MARIADB_PORT_NUMBER=3306
       - WORDPRESS_DATABASE_USER=wordpress
       - WORDPRESS_DATABASE_NAME=wordpress
       - WORDPRESS_DATABASE_PASSWORD=01d68185e332b1a6d61464991cf0d3c4
+      - APP_URL=112.150.189.246:5000
+    networks:
+      - default
+  prepare:
+    image: wordpress:cli
+    volumes:
+      - wordpress_data:/var/www/html
+    depends_on:
+      - wordpress
+    environment:
+      - WORDPRESS_DB_HOST=db
+      - WORDPRESS_DB_USER=wordpress
+      - WORDPRESS_DB_NAME=wordpress
+      - WORDPRESS_DB_PASSWORD=01d68185e332b1a6d61464991cf0d3c4
+    command: |
+      wp plugin install --path="/var/www/html" wordpress-seo
+      wp plugin install --path="/var/www/html" bbpress
+    networks:
+      - default
+
+networks:
+  default:
 
 volumes:
   answerdb_data:
