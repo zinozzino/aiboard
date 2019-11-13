@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>게시판</title>
+  </head>
+  <body>
+
+      <textarea id="question" rows="10"></textarea>
+      <button type="button" id="submit">제출</button>
+
+    <p id="answer"></p>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+      document.getElementById('submit').addEventListener('click', (ev) => {
+          ev.preventDefault();
+
+          const question = document.getElementById('question').value;
+
+          axios.post('/', { question }).then(resp => {
+            const { answer } = resp.data;
+
+            document.getElementById('answer').style.color = 'initial';
+            document.getElementById('answer').innerHTML = `${answer}`;
+          }).catch(() => {
+            document.getElementById('answer').innerHTML = '실패하였습니다.';
+            document.getElementById('answer').style.color = 'red';
+          })
+      });
+    </script>
+  </body>
+</html>

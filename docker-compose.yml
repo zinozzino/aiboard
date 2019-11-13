@@ -5,6 +5,8 @@ services:
     image: mariadb:10.4.10-bionic
     volumes:
       - 'wordpressdb_data:/var/lib/mysql'
+    ports:
+        - 3306:3306
     environment:
       - MYSQL_DATABASE=wordpress
       - MYSQL_USER=wordpress
@@ -24,26 +26,11 @@ services:
     environment:
       - MARIADB_HOST=db
       - MARIADB_PORT_NUMBER=3306
+      - WORDPRESS_DEBUG=1
       - WORDPRESS_DATABASE_USER=wordpress
       - WORDPRESS_DATABASE_NAME=wordpress
       - WORDPRESS_DATABASE_PASSWORD=01d68185e332b1a6d61464991cf0d3c4
       - APP_URL=112.150.189.246:5000
-    networks:
-      - default
-  prepare:
-    image: wordpress:cli
-    volumes:
-      - wordpress_data:/var/www/html
-    depends_on:
-      - wordpress
-    environment:
-      - WORDPRESS_DB_HOST=db
-      - WORDPRESS_DB_USER=wordpress
-      - WORDPRESS_DB_NAME=wordpress
-      - WORDPRESS_DB_PASSWORD=01d68185e332b1a6d61464991cf0d3c4
-    command: |
-      wp plugin install --path="/var/www/html" wordpress-seo
-      wp plugin install --path="/var/www/html" bbpress
     networks:
       - default
 
